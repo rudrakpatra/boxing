@@ -53,7 +53,7 @@ const container = document.getElementById("container");
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
+renderer.shadowMap.enabled = false;
 renderer.shadowMap.type = THREE.VSMShadowMap;
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -333,6 +333,22 @@ function controls(deltaTime) {
     playerVelocity.add(getSideVector().multiplyScalar(speedDelta));
   }
 
+  if (keyStates["ArrowUp"]) {
+    playerVelocity.add(getForwardVector().multiplyScalar(speedDelta));
+  }
+
+  if (keyStates["ArrowDown"]) {
+    playerVelocity.add(getForwardVector().multiplyScalar(-speedDelta));
+  }
+
+  if (keyStates["ArrowLeft"]) {
+    playerVelocity.add(getSideVector().multiplyScalar(-speedDelta));
+  }
+
+  if (keyStates["ArrowRight"]) {
+    playerVelocity.add(getSideVector().multiplyScalar(speedDelta));
+  }
+
   if (playerOnFloor) {
     if (keyStates["Space"]) {
       playerVelocity.y = 15;
@@ -341,22 +357,31 @@ function controls(deltaTime) {
 }
 
 const loader = new GLTFLoader().setPath("./models/");
+loader.load("fist.glb", (gltf) => {
+  gltf.scene.children[0].scale.set(0.01, 0.01, 0.01);
+  gltf.scene.children[0].position.set(0, -1, -1);
+  worldOctree.fromGraphNode(gltf.scene);
+  console.log(
+    (gltf.scene.children[0].material.color = new THREE.Color(0xff8866))
+  );
+  scene.add(gltf.scene);
+});
 
 loader.load("collision-world.glb", (gltf) => {
   scene.add(gltf.scene);
 
   worldOctree.fromGraphNode(gltf.scene);
 
-  gltf.scene.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true;
-      child.receiveShadow = true;
+  // gltf.scene.traverse((child) => {
+  //   if (child.isMesh) {
+  //     child.castShadow = true;
+  //     child.receiveShadow = true;
 
-      if (child.material.map) {
-        child.material.map.anisotropy = 4;
-      }
-    }
-  });
+  //     if (child.material.map) {
+  //       child.material.map.anisotropy = 4;
+  //     }
+  //   }
+  // });
 
   const helper = new OctreeHelper(worldOctree);
   helper.visible = false;

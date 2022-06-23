@@ -1,13 +1,3 @@
-# BoxingGame
-
-```
-git clone https://github.com/rudrakpatra/BoxingGame.git
-cd BoxingGame/boxing-game
-npm i   or    yarn
-npm run dev   or    yarn dev
-
-```
-
 # Goals
 - [x] setup a basic three interactive example
 - [ ] make it a keyboard controlled boxing game (boxer)
